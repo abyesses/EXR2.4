@@ -19,6 +19,7 @@
 
 typedef struct{
     sem_t asientos;
+    sem_t sala;
 }Sala;
 typedef struct{
     Sala a;
@@ -32,23 +33,26 @@ Sala * salas;
 
 void * usuarios(void * p){
     int rand_cine = rand()%10;
-    int id = (int)p;
+    //int id = (int)p;
     //printf("Soy el hilo %d\n",id);
     Cine c = cines[rand_cine];
     printf("Entrando al cine %d\n",rand_cine);
     printf("Llegando a la taquilla\n");
     sem_wait(&c.taquilla);
     printf("Llegando a la sala\n");
+    sem_wait(&c.a.sala);
+    printf("Comprando boletos\n");
     sem_wait(&c.a.asientos);
     printf("Viendo película...\n");
     sem_post(&c.taquilla);
+    sem_post(&c.a.sala);
     sem_post(&c.a.asientos);
     pthread_exit(NULL);
 }
 void init_cine(){
     for (int i = 0; i < 10; i++) {
         sem_init(&cines[i].taquilla,0,3);
-        sem_init(&cines[i].a, 0, 3);
+        sem_init(&cines[i].a.sala, 0, 3);
         sem_init(&cines[i].a.asientos, 0, 50);
     }
 }
@@ -60,8 +64,6 @@ int main(int argc, const char * argv[]) {
         for (int i = 0; i < nhilos ; ++i) {
         pthread_create(&threads_clientes[i],NULL,usuarios,i);
     }
-    
-    /* Esperar a que todos los hilos terminen */
     
     for (int i = 0; i < nhilos; ++i) {
         
