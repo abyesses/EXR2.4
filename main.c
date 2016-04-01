@@ -24,19 +24,19 @@ typedef struct{
 typedef struct{
     Sala a;
     sem_t taquilla;
+    int id;
 }Cine;
 
 Cine * cines;
 void * usuarios (void *);
 Sala * salas;
-
+void imprime_cine();
 
 void * usuarios(void * p){
     int rand_cine = rand()%10;
-    //int id = (int)p;
-    //printf("Soy el hilo %d\n",id);
     Cine c = cines[rand_cine];
-    printf("Entrando al cine %d\n",rand_cine);
+    imprime_cine();
+    printf("Entrando al cine %d\n",c.id);
     printf("Llegando a la taquilla\n");
     sem_wait(&c.taquilla);
     printf("Llegando a la sala\n");
@@ -52,18 +52,24 @@ void * usuarios(void * p){
 }
 void init_cine(){
     for (int i = 0; i < 10; i++) {
+        cines[i].id = i;
         sem_init(&cines[i].taquilla,0,3);
         sem_init(&cines[i].a.sala, 0, 3);
         sem_init(&cines[i].a.asientos, 0, 50);
     }
 }
+void imprime_cine(){
+    for (int i = 0; i < 10; i++){
+        printf("Id del cine %d\n",cines[i].id);
+    }
+}
 int main(int argc, const char * argv[]) {
     cines  = (Cine *)malloc(sizeof(Cine)*10);
     salas = (Sala *)malloc(sizeof(Sala)*3*10);
-    
+    init_cine();
     pthread_t * threads_clientes = (pthread_t *) malloc(nhilos * sizeof(pthread_t));
         for (int i = 0; i < nhilos ; ++i) {
-        pthread_create(&threads_clientes[i],NULL,usuarios,i);
+        pthread_create(&threads_clientes[i],NULL,usuarios,(void *)i);
     }
     
     for (int i = 0; i < nhilos; ++i) {
@@ -71,7 +77,6 @@ int main(int argc, const char * argv[]) {
         pthread_join(*(threads_clientes+i), NULL);
     
     }
-    
     free(threads_clientes);
     return 0;
 }
