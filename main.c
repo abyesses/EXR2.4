@@ -35,7 +35,7 @@ void imprime_cine();
 void * usuarios(void * p){
     int rand_cine = rand()%10;
     Cine c = cines[rand_cine];
-    imprime_cine();
+    //imprime_cine();
     printf("Entrando al cine %d\n",c.id);
     printf("Llegando a la taquilla\n");
     sem_wait(&c.taquilla);
@@ -74,7 +74,7 @@ int main(int argc, const char * argv[]) {
     
     for (int i = 0; i < nhilos; ++i) {
         
-        pthread_join(*(threads_clientes+i), NULL);
+        pthread_join(threads_clientes[i], NULL);
     
     }
     free(threads_clientes);
