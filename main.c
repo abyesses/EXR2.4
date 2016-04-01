@@ -74,10 +74,9 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < nhilos ; ++i) {
         pthread_create(&threads_clientes[i],NULL,usuarios,(void *)i);
     }
-    
-    for (int i = 0; i < nhilos; ++i) {
-        
-        pthread_join(threads_clientes[i], NULL);
+    for (int j = 0; j < nhilos; ++j) {
+        printf("Terminando hilo %d\n",j);
+        pthread_join(threads_clientes[j], NULL);
     
     }
     free(threads_clientes);
