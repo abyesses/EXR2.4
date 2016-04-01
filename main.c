@@ -44,6 +44,7 @@ void * usuarios(void * p){
     printf("Comprando boletos\n");
     sem_wait(&c.a.asientos);
     printf("Viendo película...\n");
+    sleep(30);
     sem_post(&c.taquilla);
     sem_post(&c.a.sala);
     sem_post(&c.a.asientos);
