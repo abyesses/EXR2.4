@@ -35,7 +35,7 @@ void imprime_cine();
 void * usuarios(void * p){
     int rand_cine = rand()%10;
     Cine c = cines[rand_cine];
-    //imprime_cine();
+    printf("Soy el hilo %d\n",(int)p);
     printf("Entrando al cine %d\n",c.id);
     printf("Llegando a la taquilla\n");
     sem_wait(&c.taquilla);
@@ -45,8 +45,11 @@ void * usuarios(void * p){
     sem_wait(&c.a.asientos);
     printf("Viendo película...\n");
     sleep(30);
+    printf("Liberando taquilla\n");
     sem_post(&c.taquilla);
+    printf("Liberando sala\n");
     sem_post(&c.a.sala);
+    printf("Liberando asientos\n");
     sem_post(&c.a.asientos);
     pthread_exit(NULL);
 }
@@ -68,7 +71,7 @@ int main(int argc, const char * argv[]) {
     salas = (Sala *)malloc(sizeof(Sala)*3*10);
     init_cine();
     pthread_t * threads_clientes = (pthread_t *) malloc(nhilos * sizeof(pthread_t));
-        for (int i = 0; i < nhilos ; ++i) {
+    for (int i = 0; i < nhilos ; ++i) {
         pthread_create(&threads_clientes[i],NULL,usuarios,(void *)i);
     }
     
